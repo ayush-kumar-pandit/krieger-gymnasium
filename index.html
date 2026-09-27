@@ -60,11 +60,10 @@
             --k-emerald: 4, 92, 66;      /* #045c42 */
             --k-emerald-glow: 0, 143, 104; /* #008f68 */
             
-            /* Hero Section Gradient Controls */
-            --hero-base: 0, 0, 0;
-            --hero-op-main: 0.5;
-            --hero-op-grad1: 0.9;
-            --hero-op-grad2: 0.7;
+            /* Hero Section - Dark Mode Cinematic Blends (Black, Gold, Emerald) */
+            --hero-bg-overlay: rgba(0, 0, 0, 0.4);
+            --hero-grad-1: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(0,0,0,0) 40%, rgba(4, 92, 66, 0.45) 100%);
+            --hero-grad-2: linear-gradient(to top, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 0.5) 40%, rgba(10, 10, 10, 0.8) 100%);
             
             /* Accents */
             --gold-grad-1: #d4af37;
@@ -84,11 +83,10 @@
             --k-emerald: 2, 64, 46;      /* Slightly darker emerald for white text contrast */
             --k-emerald-glow: 0, 102, 74; 
             
-            /* Hero Section Gradient Controls - Washes out image to prevent muddy gray contrast */
-            --hero-base: 255, 255, 255;
-            --hero-op-main: 0.85; 
-            --hero-op-grad1: 1;
-            --hero-op-grad2: 0.9;
+            /* Hero Section - Light Mode (Significantly less faded to show the image) */
+            --hero-bg-overlay: rgba(255, 255, 255, 0.2); 
+            --hero-grad-1: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, transparent 50%, rgba(248, 245, 240, 0.3) 100%);
+            --hero-grad-2: linear-gradient(to top, rgba(248, 245, 240, 1) 0%, rgba(248, 245, 240, 0.3) 40%, rgba(248, 245, 240, 0.75) 100%);
             
             /* Accents */
             --gold-grad-1: #b89326;      /* Darker gradient for legibility */
@@ -227,16 +225,19 @@
     </header>
 
     <section id="home" class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-krieger-bg transition-colors duration-700">
-        <!-- Background Image with Dynamic Theme Gradients -->
+        <!-- Background Image with Dynamic Theme Blends -->
         <div class="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" 
                  alt="Cinematic Gym Background" 
                  class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]" />
             
-            <!-- Precise variable-driven gradients to prevent muddy text contrast in light mode -->
-            <div class="absolute inset-0 transition-colors duration-700" style="background-color: rgba(var(--hero-base), var(--hero-op-main))"></div>
-            <div class="absolute inset-0 transition-colors duration-700" style="background: linear-gradient(to top, rgba(var(--hero-base), var(--hero-op-grad1)), transparent, rgba(var(--hero-base), var(--hero-op-grad2)))"></div>
-            <div class="absolute inset-0 transition-colors duration-700" style="background: linear-gradient(to right, rgba(var(--hero-base), var(--hero-op-grad1)), transparent, rgba(var(--hero-base), 0.3))"></div>
+            <!-- Precise variable-driven gradients -->
+            <!-- Base Wash layer -->
+            <div class="absolute inset-0 transition-all duration-700" style="background: var(--hero-bg-overlay)"></div>
+            <!-- Accent Color Gradient (Gold/Emerald in dark mode, subtle highlights in light) -->
+            <div class="absolute inset-0 transition-all duration-700" style="background: var(--hero-grad-1)"></div>
+            <!-- Vertical fade to match content flow -->
+            <div class="absolute inset-0 transition-all duration-700" style="background: var(--hero-grad-2)"></div>
         </div>
 
         <!-- Hero Content -->
@@ -247,7 +248,7 @@
                 Elevate Your<br/>Existence
             </h1>
             
-            <p class="reveal delay-200 text-krieger-cream/80 max-w-2xl text-sm md:text-base lg:text-lg mb-10 font-light leading-relaxed mx-auto transition-colors">
+            <p class="reveal delay-200 text-krieger-cream max-w-2xl text-sm md:text-base lg:text-lg mb-10 font-medium leading-relaxed mx-auto transition-colors drop-shadow-md">
                 An exclusive sanctuary for the elite. Forged in steel, refined by design. Step into a realm where luxury meets relentless determination.
             </p>
             
@@ -264,8 +265,8 @@
         </div>
 
         <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-2 reveal delay-300 opacity-50">
-            <span class="text-[0.6rem] uppercase tracking-widest text-krieger-gold transition-colors">Scroll</span>
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center gap-2 reveal delay-300 opacity-80">
+            <span class="text-[0.6rem] uppercase tracking-widest text-krieger-gold transition-colors font-bold">Scroll</span>
             <div class="w-[1px] h-12 bg-gradient-to-b from-krieger-gold to-transparent transition-colors"></div>
         </div>
     </section>
