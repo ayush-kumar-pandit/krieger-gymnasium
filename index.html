@@ -18,18 +18,20 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         krieger: {
-                            bg: '#0a0a0a',
-                            surface: '#141414',
+                            // Using RGB CSS variables to support Tailwind's opacity modifiers (e.g. bg-krieger-bg/90)
+                            bg: 'rgb(var(--k-bg) / <alpha-value>)',
+                            surface: 'rgb(var(--k-surface) / <alpha-value>)',
+                            cream: 'rgb(var(--k-cream) / <alpha-value>)',
+                            gray: 'rgb(var(--k-gray) / <alpha-value>)',
                             gold: '#d4af37',
                             goldDim: '#997a15',
                             emerald: '#045c42',
                             emeraldGlow: '#008f68',
-                            cream: '#f4f1ea',
-                            gray: '#888888'
                         }
                     },
                     fontFamily: {
@@ -46,16 +48,36 @@
     </script>
 
     <style>
+        /* Theme Variables */
+        :root {
+            --k-bg: 10, 10, 10;          /* #0a0a0a - Deep Black */
+            --k-surface: 20, 20, 20;     /* #141414 - Charcoal Surface */
+            --k-cream: 244, 241, 234;    /* #f4f1ea - Warm Cream Text */
+            --k-gray: 136, 136, 136;     /* #888888 - Muted Text */
+            --gold-grad-1: #d4af37;
+            --gold-grad-2: #f3e5ab;
+        }
+
+        :root.light-mode {
+            --k-bg: 248, 245, 240;       /* #f8f5f0 - Soft Alabaster */
+            --k-surface: 255, 255, 255;  /* #ffffff - Pure White Surface */
+            --k-cream: 15, 15, 15;       /* #0f0f0f - Near Black Text */
+            --k-gray: 100, 100, 100;     /* #646464 - Darker Muted Text */
+            --gold-grad-1: #b89326;      /* Slightly deeper gold for contrast */
+            --gold-grad-2: #d4af37;
+        }
+
         body {
-            background-color: #0a0a0a;
-            color: #f4f1ea;
+            background-color: rgb(var(--k-bg));
+            color: rgb(var(--k-cream));
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         /* Cinematic text gradient for gold elements */
         .text-gold-gradient {
-            background: linear-gradient(to right, #d4af37, #f3e5ab, #d4af37);
+            background: linear-gradient(to right, var(--gold-grad-1), var(--gold-grad-2), var(--gold-grad-1));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -78,6 +100,7 @@
         .btn-glow:hover {
             transform: translateY(-2px);
             background-color: #008f68;
+            color: #f4f1ea; /* Force light text on emerald hover */
         }
         .btn-glow:hover::after {
             box-shadow: 0 0 25px 5px rgba(0, 143, 104, 0.6);
@@ -114,10 +137,10 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a0a0a;
+            background: rgb(var(--k-bg));
         }
         ::-webkit-scrollbar-thumb {
-            background: #333;
+            background: rgb(var(--k-gray));
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
@@ -149,6 +172,12 @@
                 <button class="text-krieger-cream hover:text-krieger-gold transition-colors duration-300">
                     <i class="fa-solid fa-search text-lg"></i>
                 </button>
+                
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="text-krieger-cream hover:text-krieger-gold transition-colors duration-300 ml-2" title="Toggle Light/Dark Mode">
+                    <i class="fa-solid fa-sun text-lg"></i>
+                </button>
+
                 <a href="#membership" class="btn-outline-gold px-6 py-2.5 text-xs font-semibold tracking-widest uppercase flex items-center gap-2">
                     <span>Sign Up</span>
                     <i class="fa-solid fa-arrow-right text-[10px]"></i>
@@ -156,7 +185,7 @@
             </div>
 
             <!-- Mobile Menu Toggle -->
-            <button id="mobile-menu-btn" class="lg:hidden text-krieger-gold z-50 focus:outline-none">
+            <button id="mobile-menu-btn" class="lg:hidden text-krieger-gold z-50 focus:outline-none flex items-center gap-4">
                 <i class="fa-solid fa-bars text-2xl"></i>
             </button>
         </div>
@@ -168,22 +197,27 @@
             <a href="#services" class="mobile-link text-xl font-serif tracking-widest hover:text-krieger-gold transition-colors">SERVICES</a>
             <a href="#gallery" class="mobile-link text-xl font-serif tracking-widest hover:text-krieger-gold transition-colors">GALLERY</a>
             <a href="#membership" class="mobile-link text-xl font-serif tracking-widest hover:text-krieger-gold transition-colors">MEMBERSHIP</a>
+            
+            <button id="mobile-theme-toggle" class="mt-4 mobile-link text-sm font-serif tracking-widest text-krieger-gold flex items-center gap-3">
+                <i class="fa-solid fa-sun text-lg"></i> <span>LIGHT MODE</span>
+            </button>
+
             <a href="#membership" class="mt-8 btn-outline-gold px-8 py-3 text-sm font-semibold tracking-widest uppercase">Sign Up</a>
         </div>
     </header>
 
     <section id="home" class="relative h-screen w-full flex items-center justify-center overflow-hidden">
-        <!-- Background Image with Moody Gradient -->
-        <div class="absolute inset-0 z-0">
+        <!-- Background Image with Dynamic Theme Gradients -->
+        <div class="absolute inset-0 z-0 bg-krieger-bg">
             <!-- High-quality Unsplash image placeholder -->
             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" 
                  alt="Cinematic Gym Background" 
                  class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]" />
             
-            <!-- Multiple gradient layers for extreme cinematic depth -->
-            <div class="absolute inset-0 bg-black/40"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-krieger-bg via-transparent to-black/60"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-krieger-bg/90 via-transparent to-krieger-bg/30"></div>
+            <!-- Multiple gradient layers tied to CSS variables for dynamic mode switching -->
+            <div class="absolute inset-0 bg-krieger-bg/40 transition-colors duration-500"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-krieger-bg via-transparent to-krieger-bg/60 transition-colors duration-500"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-krieger-bg/90 via-transparent to-krieger-bg/30 transition-colors duration-500"></div>
         </div>
 
         <!-- Hero Content -->
@@ -199,7 +233,7 @@
             </p>
             
             <div class="reveal delay-300 flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
-                <a href="#membership" class="btn-glow bg-krieger-emerald text-krieger-cream px-10 py-4 font-bold tracking-widest text-sm uppercase rounded-sm flex items-center justify-center gap-3">
+                <a href="#membership" class="btn-glow bg-krieger-emerald text-[#f4f1ea] px-10 py-4 font-bold tracking-widest text-sm uppercase rounded-sm flex items-center justify-center gap-3 border border-transparent">
                     <span>Discover Membership</span>
                     <i class="fa-solid fa-chevron-right text-xs"></i>
                 </a>
@@ -217,7 +251,7 @@
         </div>
     </section>
 
-    <section id="fitness" class="py-24 lg:py-32 bg-krieger-bg relative border-b border-white/5">
+    <section id="fitness" class="py-24 lg:py-32 bg-krieger-bg relative border-b border-krieger-cream/10 transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
             <div class="order-2 lg:order-1 reveal">
@@ -226,8 +260,8 @@
                          alt="Gym Equipment" 
                          class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 filter grayscale-[30%] contrast-125" />
                     <!-- Decorative borders -->
-                    <div class="absolute inset-4 border border-krieger-gold/30 z-10 pointer-events-none"></div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-krieger-bg via-transparent to-transparent"></div>
+                    <div class="absolute inset-4 border border-krieger-gold/30 z-10 pointer-events-none transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-krieger-bg via-transparent to-transparent transition-colors duration-500"></div>
                 </div>
             </div>
 
@@ -237,15 +271,15 @@
                     <span class="font-sans text-xs uppercase tracking-widest text-krieger-gold font-semibold">Our Philosophy</span>
                 </div>
                 
-                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream mb-8 leading-tight tracking-wide">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream mb-8 leading-tight tracking-wide transition-colors duration-500">
                     BEYOND TRADITIONAL <br />
                     <span class="text-krieger-gray italic font-light">FITNESS</span>
                 </h2>
                 
-                <p class="text-krieger-cream/70 font-light leading-relaxed mb-6 text-sm md:text-base">
+                <p class="text-krieger-cream/80 font-light leading-relaxed mb-6 text-sm md:text-base transition-colors duration-500">
                     The Krieger Gymnasium is not merely a place to train; it is an architectural masterpiece designed to inspire greatness. We merge state-of-the-art bio-mechanical engineering with the aesthetic elegance of a private member's club.
                 </p>
-                <p class="text-krieger-cream/70 font-light leading-relaxed mb-10 text-sm md:text-base">
+                <p class="text-krieger-cream/80 font-light leading-relaxed mb-10 text-sm md:text-base transition-colors duration-500">
                     Every texture, every ambient light, and every piece of hand-selected equipment exists to elevate your physical potential in an environment of absolute sophistication.
                 </p>
                 
@@ -257,44 +291,44 @@
         </div>
     </section>
 
-    <section id="services" class="py-24 lg:py-32 bg-krieger-surface relative border-b border-white/5">
+    <section id="services" class="py-24 lg:py-32 bg-krieger-surface relative border-b border-krieger-cream/10 transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
             
             <div class="text-center mb-20 reveal">
                 <span class="font-sans text-xs uppercase tracking-widest text-krieger-gold font-semibold block mb-4">Elite Offerings</span>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide">CURATED SERVICES</h2>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide transition-colors duration-500">CURATED SERVICES</h2>
                 <div class="w-16 h-[2px] bg-krieger-gold mx-auto mt-6"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Service Card 1 -->
-                <div class="reveal bg-krieger-bg p-10 border border-white/5 hover:border-krieger-gold/40 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full">
+                <div class="reveal bg-krieger-bg p-10 border border-krieger-cream/10 hover:border-krieger-gold/40 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-krieger-emerald/10 rounded-full blur-3xl group-hover:bg-krieger-emerald/20 transition-all"></div>
                     <i class="fa-solid fa-dumbbell text-4xl text-krieger-gold mb-8 group-hover:-translate-y-2 transition-transform duration-300"></i>
-                    <h3 class="font-serif text-xl font-bold text-krieger-cream mb-4 tracking-wider">Bespoke Training</h3>
-                    <p class="text-krieger-cream/60 font-light text-sm flex-grow mb-6">One-on-one coaching meticulously tailored to your biomechanics, ensuring peak performance and optimal aesthetics.</p>
+                    <h3 class="font-serif text-xl font-bold text-krieger-cream mb-4 tracking-wider transition-colors duration-500">Bespoke Training</h3>
+                    <p class="text-krieger-cream/70 font-light text-sm flex-grow mb-6 transition-colors duration-500">One-on-one coaching meticulously tailored to your biomechanics, ensuring peak performance and optimal aesthetics.</p>
                     <a href="#" class="text-krieger-emerald hover:text-krieger-gold text-xs tracking-widest uppercase font-semibold mt-auto inline-flex items-center gap-2 transition-colors">
                         Learn More <i class="fa-solid fa-angle-right"></i>
                     </a>
                 </div>
 
                 <!-- Service Card 2 -->
-                <div class="reveal delay-100 bg-krieger-bg p-10 border border-white/5 hover:border-krieger-gold/40 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full">
+                <div class="reveal delay-100 bg-krieger-bg p-10 border border-krieger-cream/10 hover:border-krieger-gold/40 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-krieger-emerald/10 rounded-full blur-3xl group-hover:bg-krieger-emerald/20 transition-all"></div>
                     <i class="fa-solid fa-spa text-4xl text-krieger-gold mb-8 group-hover:-translate-y-2 transition-transform duration-300"></i>
-                    <h3 class="font-serif text-xl font-bold text-krieger-cream mb-4 tracking-wider">Recovery Suite</h3>
-                    <p class="text-krieger-cream/60 font-light text-sm flex-grow mb-6">Access our cryotherapy chambers, infrared saunas, and sports massage therapists to accelerate your regeneration.</p>
+                    <h3 class="font-serif text-xl font-bold text-krieger-cream mb-4 tracking-wider transition-colors duration-500">Recovery Suite</h3>
+                    <p class="text-krieger-cream/70 font-light text-sm flex-grow mb-6 transition-colors duration-500">Access our cryotherapy chambers, infrared saunas, and sports massage therapists to accelerate your regeneration.</p>
                     <a href="#" class="text-krieger-emerald hover:text-krieger-gold text-xs tracking-widest uppercase font-semibold mt-auto inline-flex items-center gap-2 transition-colors">
                         Learn More <i class="fa-solid fa-angle-right"></i>
                     </a>
                 </div>
 
                 <!-- Service Card 3 -->
-                <div class="reveal delay-200 bg-krieger-bg p-10 border border-white/5 hover:border-krieger-gold/40 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full">
+                <div class="reveal delay-200 bg-krieger-bg p-10 border border-krieger-cream/10 hover:border-krieger-gold/40 transition-colors duration-500 group relative overflow-hidden flex flex-col h-full">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-krieger-emerald/10 rounded-full blur-3xl group-hover:bg-krieger-emerald/20 transition-all"></div>
                     <i class="fa-solid fa-martini-glass-citrus text-4xl text-krieger-gold mb-8 group-hover:-translate-y-2 transition-transform duration-300"></i>
-                    <h3 class="font-serif text-xl font-bold text-krieger-cream mb-4 tracking-wider">Members Lounge</h3>
-                    <p class="text-krieger-cream/60 font-light text-sm flex-grow mb-6">A private sanctuary to network, work, or unwind with artisanal nutrition and craft protein blends post-training.</p>
+                    <h3 class="font-serif text-xl font-bold text-krieger-cream mb-4 tracking-wider transition-colors duration-500">Members Lounge</h3>
+                    <p class="text-krieger-cream/70 font-light text-sm flex-grow mb-6 transition-colors duration-500">A private sanctuary to network, work, or unwind with artisanal nutrition and craft protein blends post-training.</p>
                     <a href="#" class="text-krieger-emerald hover:text-krieger-gold text-xs tracking-widest uppercase font-semibold mt-auto inline-flex items-center gap-2 transition-colors">
                         Learn More <i class="fa-solid fa-angle-right"></i>
                     </a>
@@ -303,156 +337,156 @@
         </div>
     </section>
 
-    <!-- NEW: Image Gallery Section -->
-    <section id="gallery" class="py-24 lg:py-32 bg-krieger-bg relative border-b border-white/5">
+    <!-- Image Gallery Section -->
+    <section id="gallery" class="py-24 lg:py-32 bg-krieger-bg relative border-b border-krieger-cream/10 transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
             
             <div class="text-center mb-16 reveal">
                 <span class="font-sans text-xs uppercase tracking-widest text-krieger-gold font-semibold block mb-4">The Sanctuary</span>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide">VISUALIZE EXCELLENCE</h2>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide transition-colors duration-500">VISUALIZE EXCELLENCE</h2>
                 <div class="w-16 h-[2px] bg-krieger-gold mx-auto mt-6"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="reveal relative aspect-square overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=2070&auto=format&fit=crop" alt="Gym Floor" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter grayscale contrast-125 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-krieger-bg/40 group-hover:bg-krieger-bg/10 transition-colors duration-500"></div>
                 </div>
                 <div class="reveal delay-100 relative aspect-square overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1599058917212-597148e71c66?q=80&w=2069&auto=format&fit=crop" alt="Equipment" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter grayscale contrast-125 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-krieger-bg/40 group-hover:bg-krieger-bg/10 transition-colors duration-500"></div>
                 </div>
                 <div class="reveal delay-200 relative aspect-square overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=2128&auto=format&fit=crop" alt="Cardio Deck" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter grayscale contrast-125 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-krieger-bg/40 group-hover:bg-krieger-bg/10 transition-colors duration-500"></div>
                 </div>
                 <div class="reveal relative aspect-square overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" alt="Weights" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter grayscale contrast-125 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-krieger-bg/40 group-hover:bg-krieger-bg/10 transition-colors duration-500"></div>
                 </div>
                 <div class="reveal delay-100 relative aspect-square overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1603287681836-b174ce5074c2?q=80&w=2071&auto=format&fit=crop" alt="Ropes" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter grayscale contrast-125 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-krieger-bg/40 group-hover:bg-krieger-bg/10 transition-colors duration-500"></div>
                 </div>
                 <div class="reveal delay-200 relative aspect-square overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop" alt="Strength" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter grayscale contrast-125 group-hover:grayscale-0">
-                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-krieger-bg/40 group-hover:bg-krieger-bg/10 transition-colors duration-500"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- NEW: Pricing Section -->
-    <section id="membership" class="py-24 lg:py-32 bg-krieger-surface relative border-b border-white/5">
+    <!-- Pricing Section -->
+    <section id="membership" class="py-24 lg:py-32 bg-krieger-surface relative border-b border-krieger-cream/10 transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
             
             <div class="text-center mb-20 reveal">
                 <span class="font-sans text-xs uppercase tracking-widest text-krieger-gold font-semibold block mb-4">Join The Elite</span>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide">MEMBERSHIP TIERS</h2>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide transition-colors duration-500">MEMBERSHIP TIERS</h2>
                 <div class="w-16 h-[2px] bg-krieger-gold mx-auto mt-6"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                 <!-- Access Tier -->
-                <div class="reveal bg-krieger-bg p-10 border border-white/5 flex flex-col h-full">
-                    <h3 class="font-serif text-2xl font-bold text-krieger-cream mb-2">ACCESS</h3>
+                <div class="reveal bg-krieger-bg p-10 border border-krieger-cream/10 transition-colors duration-500 flex flex-col h-full">
+                    <h3 class="font-serif text-2xl font-bold text-krieger-cream mb-2 transition-colors">ACCESS</h3>
                     <div class="text-krieger-gold font-serif text-3xl mb-6">$150 <span class="text-sm font-sans text-krieger-gray font-light">/ month</span></div>
-                    <p class="text-krieger-gray text-sm font-light mb-8 pb-8 border-b border-white/10">The foundational tier for autonomous athletes requiring elite equipment.</p>
-                    <ul class="space-y-4 mb-10 flex-grow text-sm font-light text-krieger-cream/80">
+                    <p class="text-krieger-gray text-sm font-light mb-8 pb-8 border-b border-krieger-cream/10 transition-colors">The foundational tier for autonomous athletes requiring elite equipment.</p>
+                    <ul class="space-y-4 mb-10 flex-grow text-sm font-light text-krieger-cream/80 transition-colors">
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Full Gymnasium Access</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Luxury Towel Service</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Day Locker Usage</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Member Lounge Access</li>
                     </ul>
-                    <a href="#" class="w-full text-center border border-white/20 hover:border-krieger-gold text-krieger-cream hover:text-krieger-gold py-3 text-xs tracking-widest uppercase transition-all duration-300">Apply Now</a>
+                    <a href="#" class="w-full text-center border border-krieger-cream/30 hover:border-krieger-gold text-krieger-cream hover:text-krieger-gold py-3 text-xs tracking-widest uppercase transition-all duration-300">Apply Now</a>
                 </div>
 
                 <!-- Prime Tier (Highlighted) -->
-                <div class="reveal delay-100 bg-krieger-bg p-10 border border-krieger-gold shadow-[0_0_30px_rgba(212,175,55,0.1)] transform md:scale-105 relative flex flex-col h-full z-10">
+                <div class="reveal delay-100 bg-krieger-bg p-10 border border-krieger-gold shadow-[0_0_30px_rgba(212,175,55,0.1)] transform md:scale-105 relative flex flex-col h-full z-10 transition-colors duration-500">
                     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-krieger-gold text-black text-[0.6rem] font-bold uppercase tracking-widest px-4 py-1">Most Popular</div>
-                    <h3 class="font-serif text-2xl font-bold text-krieger-cream mb-2">PRIME</h3>
+                    <h3 class="font-serif text-2xl font-bold text-krieger-cream mb-2 transition-colors">PRIME</h3>
                     <div class="text-krieger-gold font-serif text-4xl mb-6">$300 <span class="text-sm font-sans text-krieger-gray font-light">/ month</span></div>
-                    <p class="text-krieger-gray text-sm font-light mb-8 pb-8 border-b border-white/10">Comprehensive wellness encompassing training, recovery, and guidance.</p>
-                    <ul class="space-y-4 mb-10 flex-grow text-sm font-light text-krieger-cream/80">
+                    <p class="text-krieger-gray text-sm font-light mb-8 pb-8 border-b border-krieger-cream/10 transition-colors">Comprehensive wellness encompassing training, recovery, and guidance.</p>
+                    <ul class="space-y-4 mb-10 flex-grow text-sm font-light text-krieger-cream/80 transition-colors">
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> All Access Benefits</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Unlimited Group Classes</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Recovery Suite (4x/mo)</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> 1 Personal Training Session</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Guest Passes (2x/mo)</li>
                     </ul>
-                    <a href="#" class="w-full text-center bg-krieger-gold text-black hover:bg-krieger-cream py-3 text-xs font-bold tracking-widest uppercase transition-all duration-300">Apply Now</a>
+                    <a href="#" class="w-full text-center bg-krieger-gold text-black hover:opacity-80 py-3 text-xs font-bold tracking-widest uppercase transition-all duration-300">Apply Now</a>
                 </div>
 
                 <!-- Krieger Tier -->
-                <div class="reveal delay-200 bg-krieger-bg p-10 border border-white/5 flex flex-col h-full">
-                    <h3 class="font-serif text-2xl font-bold text-krieger-cream mb-2">KRIEGER</h3>
+                <div class="reveal delay-200 bg-krieger-bg p-10 border border-krieger-cream/10 transition-colors duration-500 flex flex-col h-full">
+                    <h3 class="font-serif text-2xl font-bold text-krieger-cream mb-2 transition-colors">KRIEGER</h3>
                     <div class="text-krieger-gold font-serif text-3xl mb-6">$750 <span class="text-sm font-sans text-krieger-gray font-light">/ month</span></div>
-                    <p class="text-krieger-gray text-sm font-light mb-8 pb-8 border-b border-white/10">The absolute zenith of physical preparation and concierge service.</p>
-                    <ul class="space-y-4 mb-10 flex-grow text-sm font-light text-krieger-cream/80">
+                    <p class="text-krieger-gray text-sm font-light mb-8 pb-8 border-b border-krieger-cream/10 transition-colors">The absolute zenith of physical preparation and concierge service.</p>
+                    <ul class="space-y-4 mb-10 flex-grow text-sm font-light text-krieger-cream/80 transition-colors">
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> All Prime Benefits</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Unlimited Recovery Suite</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> 4 Personal Training Sessions</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Dedicated Private Locker</li>
                         <li class="flex items-start gap-3"><i class="fa-solid fa-check text-krieger-gold mt-1 text-xs"></i> Bespoke Nutrition Plan</li>
                     </ul>
-                    <a href="#" class="w-full text-center border border-white/20 hover:border-krieger-gold text-krieger-cream hover:text-krieger-gold py-3 text-xs tracking-widest uppercase transition-all duration-300">Inquire Within</a>
+                    <a href="#" class="w-full text-center border border-krieger-cream/30 hover:border-krieger-gold text-krieger-cream hover:text-krieger-gold py-3 text-xs tracking-widest uppercase transition-all duration-300">Inquire Within</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- NEW: Reviews Section -->
-    <section id="reviews" class="py-24 lg:py-32 bg-krieger-bg relative">
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-24 lg:py-32 bg-krieger-bg relative transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 lg:px-12">
             
             <div class="text-center mb-20 reveal">
                 <span class="font-sans text-xs uppercase tracking-widest text-krieger-gold font-semibold block mb-4">Member Legacies</span>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide">WORDS OF THE ELITE</h2>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-krieger-cream tracking-wide transition-colors duration-500">WORDS OF THE ELITE</h2>
                 <div class="w-16 h-[2px] bg-krieger-gold mx-auto mt-6"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Review 1 -->
-                <div class="reveal bg-krieger-surface p-10 border border-white/5 relative">
+                <div class="reveal bg-krieger-surface p-10 border border-krieger-cream/10 relative transition-colors duration-500">
                     <i class="fa-solid fa-quote-left text-4xl text-krieger-gold/20 absolute top-6 left-6"></i>
-                    <p class="font-serif italic text-krieger-cream/90 text-lg leading-relaxed mb-8 relative z-10 pt-4">
+                    <p class="font-serif italic text-krieger-cream/90 text-lg leading-relaxed mb-8 relative z-10 pt-4 transition-colors">
                         "The atmosphere here is unmatched. It feels less like a traditional gym and more like a private club for high performers. The attention to detail is staggering."
                     </p>
-                    <div class="flex items-center gap-4 border-t border-white/10 pt-6">
-                        <div class="w-12 h-12 rounded-full bg-krieger-bg border border-krieger-gold flex items-center justify-center font-serif text-krieger-gold">AV</div>
+                    <div class="flex items-center gap-4 border-t border-krieger-cream/10 pt-6 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-krieger-bg border border-krieger-gold flex items-center justify-center font-serif text-krieger-gold transition-colors duration-500">AV</div>
                         <div>
-                            <h4 class="font-bold text-sm tracking-wide text-krieger-cream uppercase">Alexander V.</h4>
-                            <span class="text-xs text-krieger-gray font-light">CEO & Founder</span>
+                            <h4 class="font-bold text-sm tracking-wide text-krieger-cream uppercase transition-colors">Alexander V.</h4>
+                            <span class="text-xs text-krieger-gray font-light transition-colors">CEO & Founder</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Review 2 -->
-                <div class="reveal delay-100 bg-krieger-surface p-10 border border-white/5 relative">
+                <div class="reveal delay-100 bg-krieger-surface p-10 border border-krieger-cream/10 relative transition-colors duration-500">
                     <i class="fa-solid fa-quote-left text-4xl text-krieger-gold/20 absolute top-6 left-6"></i>
-                    <p class="font-serif italic text-krieger-cream/90 text-lg leading-relaxed mb-8 relative z-10 pt-4">
+                    <p class="font-serif italic text-krieger-cream/90 text-lg leading-relaxed mb-8 relative z-10 pt-4 transition-colors">
                         "State-of-the-art biomechanical equipment paired with the recovery suite has completely revolutionized my off-season training regimen."
                     </p>
-                    <div class="flex items-center gap-4 border-t border-white/10 pt-6">
-                        <div class="w-12 h-12 rounded-full bg-krieger-bg border border-krieger-gold flex items-center justify-center font-serif text-krieger-gold">MT</div>
+                    <div class="flex items-center gap-4 border-t border-krieger-cream/10 pt-6 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-krieger-bg border border-krieger-gold flex items-center justify-center font-serif text-krieger-gold transition-colors duration-500">MT</div>
                         <div>
-                            <h4 class="font-bold text-sm tracking-wide text-krieger-cream uppercase">Marcus T.</h4>
-                            <span class="text-xs text-krieger-gray font-light">Professional Athlete</span>
+                            <h4 class="font-bold text-sm tracking-wide text-krieger-cream uppercase transition-colors">Marcus T.</h4>
+                            <span class="text-xs text-krieger-gray font-light transition-colors">Professional Athlete</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Review 3 -->
-                <div class="reveal delay-200 bg-krieger-surface p-10 border border-white/5 relative">
+                <div class="reveal delay-200 bg-krieger-surface p-10 border border-krieger-cream/10 relative transition-colors duration-500">
                     <i class="fa-solid fa-quote-left text-4xl text-krieger-gold/20 absolute top-6 left-6"></i>
-                    <p class="font-serif italic text-krieger-cream/90 text-lg leading-relaxed mb-8 relative z-10 pt-4">
+                    <p class="font-serif italic text-krieger-cream/90 text-lg leading-relaxed mb-8 relative z-10 pt-4 transition-colors">
                         "An oasis of pure focus. The lighting, the architecture, the community—everything is engineered to pull the absolute best out of you."
                     </p>
-                    <div class="flex items-center gap-4 border-t border-white/10 pt-6">
-                        <div class="w-12 h-12 rounded-full bg-krieger-bg border border-krieger-gold flex items-center justify-center font-serif text-krieger-gold">ER</div>
+                    <div class="flex items-center gap-4 border-t border-krieger-cream/10 pt-6 transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-krieger-bg border border-krieger-gold flex items-center justify-center font-serif text-krieger-gold transition-colors duration-500">ER</div>
                         <div>
-                            <h4 class="font-bold text-sm tracking-wide text-krieger-cream uppercase">Elena R.</h4>
-                            <span class="text-xs text-krieger-gray font-light">Lead Architect</span>
+                            <h4 class="font-bold text-sm tracking-wide text-krieger-cream uppercase transition-colors">Elena R.</h4>
+                            <span class="text-xs text-krieger-gray font-light transition-colors">Lead Architect</span>
                         </div>
                     </div>
                 </div>
@@ -460,15 +494,15 @@
         </div>
     </section>
 
-    <footer class="bg-black py-16 border-t border-krieger-gold/20">
+    <footer class="bg-krieger-surface py-16 border-t border-krieger-gold/20 transition-colors duration-500">
         <div class="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
             
             <div class="md:col-span-1 flex flex-col items-start">
                 <a href="#" class="group flex flex-col items-start leading-none mb-6">
                     <span class="font-serif font-bold text-krieger-gold tracking-widest text-lg">THE KRIEGER</span>
-                    <span class="font-sans font-light text-krieger-cream text-[0.6rem] tracking-superwide mt-1">GYMNASIUM</span>
+                    <span class="font-sans font-light text-krieger-cream text-[0.6rem] tracking-superwide mt-1 transition-colors">GYMNASIUM</span>
                 </a>
-                <p class="text-krieger-gray font-light mb-6">Where raw power meets unparalleled luxury. The ultimate destination for physical and mental refinement.</p>
+                <p class="text-krieger-gray font-light mb-6 transition-colors">Where raw power meets unparalleled luxury. The ultimate destination for physical and mental refinement.</p>
                 <div class="flex gap-4">
                     <a href="#" class="w-8 h-8 rounded-full border border-krieger-gray/30 flex items-center justify-center text-krieger-gray hover:text-krieger-gold hover:border-krieger-gold transition-all"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#" class="w-8 h-8 rounded-full border border-krieger-gray/30 flex items-center justify-center text-krieger-gray hover:text-krieger-gold hover:border-krieger-gold transition-all"><i class="fa-brands fa-twitter"></i></a>
@@ -476,8 +510,8 @@
             </div>
 
             <div class="md:col-span-1">
-                <h4 class="font-serif text-krieger-cream tracking-widest mb-6 uppercase">Navigation</h4>
-                <ul class="space-y-3 font-light text-krieger-gray">
+                <h4 class="font-serif text-krieger-cream tracking-widest mb-6 uppercase transition-colors">Navigation</h4>
+                <ul class="space-y-3 font-light text-krieger-gray transition-colors">
                     <li><a href="#home" class="hover:text-krieger-gold transition-colors">Home</a></li>
                     <li><a href="#fitness" class="hover:text-krieger-gold transition-colors">Our Fitness</a></li>
                     <li><a href="#services" class="hover:text-krieger-gold transition-colors">Services</a></li>
@@ -486,8 +520,8 @@
             </div>
 
             <div class="md:col-span-1">
-                <h4 class="font-serif text-krieger-cream tracking-widest mb-6 uppercase">Legal</h4>
-                <ul class="space-y-3 font-light text-krieger-gray">
+                <h4 class="font-serif text-krieger-cream tracking-widest mb-6 uppercase transition-colors">Legal</h4>
+                <ul class="space-y-3 font-light text-krieger-gray transition-colors">
                     <li><a href="#" class="hover:text-krieger-gold transition-colors">Privacy Policy</a></li>
                     <li><a href="#" class="hover:text-krieger-gold transition-colors">Terms of Service</a></li>
                     <li><a href="#" class="hover:text-krieger-gold transition-colors">Club Rules</a></li>
@@ -495,8 +529,8 @@
             </div>
 
             <div class="md:col-span-1">
-                <h4 class="font-serif text-krieger-cream tracking-widest mb-6 uppercase">Contact</h4>
-                <ul class="space-y-3 font-light text-krieger-gray">
+                <h4 class="font-serif text-krieger-cream tracking-widest mb-6 uppercase transition-colors">Contact</h4>
+                <ul class="space-y-3 font-light text-krieger-gray transition-colors">
                     <li>123 Luxury Ave, Penthouse</li>
                     <li>Metropolis, NY 10001</li>
                     <li class="mt-4"><a href="mailto:concierge@krieger.com" class="text-krieger-gold hover:text-krieger-cream transition-colors">concierge@krieger.com</a></li>
@@ -505,7 +539,7 @@
             </div>
         </div>
         
-        <div class="max-w-7xl mx-auto px-6 lg:px-12 mt-16 pt-8 border-t border-white/5 text-center flex flex-col md:flex-row justify-between items-center text-xs text-krieger-gray font-light">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 mt-16 pt-8 border-t border-krieger-cream/10 transition-colors text-center flex flex-col md:flex-row justify-between items-center text-xs text-krieger-gray font-light">
             <p>&copy; 2026 The Krieger Gymnasium. All Rights Reserved.</p>
             <p class="mt-2 md:mt-0 uppercase tracking-widest text-[10px]">Aesthetic Engineering</p>
         </div>
@@ -513,20 +547,55 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            /* Navbar Scroll Effect */
+            
+            /* --- Theme Toggle Logic --- */
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle');
+            const htmlEl = document.documentElement;
+            const themeIcon = themeToggleBtn.querySelector('i');
+            const mobileThemeIcon = mobileThemeToggleBtn.querySelector('i');
+            const mobileThemeText = mobileThemeToggleBtn.querySelector('span');
+
+            function toggleTheme() {
+                htmlEl.classList.toggle('light-mode');
+                const isLight = htmlEl.classList.contains('light-mode');
+                
+                if (isLight) {
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                    mobileThemeIcon.classList.replace('fa-sun', 'fa-moon');
+                    mobileThemeText.textContent = 'DARK MODE';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                    mobileThemeIcon.classList.replace('fa-moon', 'fa-sun');
+                    mobileThemeText.textContent = 'LIGHT MODE';
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+
+            // Check local storage for saved theme preference
+            if (localStorage.getItem('theme') === 'light') {
+                toggleTheme(); // Setup initial light state
+            }
+
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            mobileThemeToggleBtn.addEventListener('click', toggleTheme);
+
+
+            /* --- Navbar Scroll Effect --- */
             const navbar = document.getElementById('navbar');
             
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
-                    navbar.classList.add('bg-krieger-bg/95', 'backdrop-blur-md', 'py-4', 'border-white/5', 'shadow-lg');
+                    navbar.classList.add('bg-krieger-bg/95', 'backdrop-blur-md', 'py-4', 'border-krieger-cream/10', 'shadow-lg');
                     navbar.classList.remove('py-6', 'border-transparent');
                 } else {
-                    navbar.classList.remove('bg-krieger-bg/95', 'backdrop-blur-md', 'py-4', 'border-white/5', 'shadow-lg');
+                    navbar.classList.remove('bg-krieger-bg/95', 'backdrop-blur-md', 'py-4', 'border-krieger-cream/10', 'shadow-lg');
                     navbar.classList.add('py-6', 'border-transparent');
                 }
             });
 
-            /* Mobile Menu Toggle */
+            /* --- Mobile Menu Toggle --- */
             const menuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
             const mobileLinks = document.querySelectorAll('.mobile-link');
@@ -549,12 +618,15 @@
 
             menuBtn.addEventListener('click', toggleMenu);
             mobileLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if(isMenuOpen) toggleMenu();
-                });
+                // Ignore click if it's the theme toggle inside the mobile menu
+                if(link.id !== 'mobile-theme-toggle') {
+                    link.addEventListener('click', () => {
+                        if(isMenuOpen) toggleMenu();
+                    });
+                }
             });
 
-            /* Intersection Observer for Reveal Animations */
+            /* --- Intersection Observer for Reveal Animations --- */
             const revealElements = document.querySelectorAll('.reveal');
             
             const revealOptions = {
@@ -566,7 +638,7 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
-                        observer.unobserve(entry.target); // Run once
+                        observer.unobserve(entry.target); 
                     }
                 });
             }, revealOptions);
